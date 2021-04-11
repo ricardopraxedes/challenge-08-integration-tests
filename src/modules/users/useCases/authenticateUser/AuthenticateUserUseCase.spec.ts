@@ -17,27 +17,6 @@ describe('Authenticate user use case', () => {
         authenticateUserUseCase = new AuthenticateUserUseCase(inMemoryUsersRepository)
         createUserUseCase = new CreateUserUseCase(inMemoryUsersRepository)
     });
-
-    it('should not be able to authenticate user with wrong password', async () => {
-
-        const email = "test@test.com"
-        const password = "1234"
-        const wrongPassword = "4567"
-        const name = "test name"
-
-        const createUserDto: ICreateUserDTO = {
-            name,
-            email,
-            password
-        }
-
-        await createUserUseCase.execute(createUserDto)
-        
-        expect(async () => {
-            await authenticateUserUseCase.execute({ email, password: wrongPassword })
-        }).rejects.toBeInstanceOf(IncorrectEmailOrPasswordError)
-
-    });
     it('should be able to authenticate existing user', async () => {
 
         const mockJwt = {
@@ -70,10 +49,31 @@ describe('Authenticate user use case', () => {
     });
     it('should not be able to authenticate not existing user', async () => {
 
-        expect(async () => {
-            const email = "test@test.com"
-            const password = "1234"
-            await authenticateUserUseCase.execute({ email, password })
-        }).rejects.toBeInstanceOf(IncorrectEmailOrPasswordError)
+        const email = "test@test.com"
+        const password = "1234"
+
+        await expect(
+            authenticateUserUseCase.execute({ email, password })
+        ).rejects.toBeInstanceOf(IncorrectEmailOrPasswordError)
+    });
+
+    it('should not be able to authenticate user with wrong password', async () => {
+
+        const email = "test@test.com"
+        const password = "1234"
+        const wrongPassword = "4567"
+        const name = "test name"
+
+        const createUserDto: ICreateUserDTO = {
+            name,
+            email,
+            password
+        }
+
+        await createUserUseCase.execute(createUserDto)
+
+        await expect(
+            authenticateUserUseCase.execute({ email, password: wrongPassword })
+        ).rejects.toBeInstanceOf(IncorrectEmailOrPasswordError)
     });
 });

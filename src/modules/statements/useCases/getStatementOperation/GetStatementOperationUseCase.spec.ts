@@ -39,49 +39,49 @@ describe('Get statement operation use case', () => {
         expect(actualStatement).toMatchObject(expectedStatement)
 
     });
-    it('should throw when statement operation not exists', () => {
-        expect(async () => {
-            const createUserDto: ICreateUserDTO = {
-                name: "test name",
-                email: "test@test.com",
-                password: "1234"
-            }
+    it('should throw when statement operation not exists', async () => {
 
-            const user = await inMemoryUsersRepository.create(createUserDto)
+        const createUserDto: ICreateUserDTO = {
+            name: "test name",
+            email: "test@test.com",
+            password: "1234"
+        }
 
-            const fakeStatementId = "1234"
+        const user = await inMemoryUsersRepository.create(createUserDto)
 
-            await getStatementOperationUseCase.execute(
-                { user_id: user.id as string, statement_id: fakeStatementId as string }
-            )
-        }).rejects.toBeInstanceOf(GetStatementOperationError.StatementNotFound)
+        const fakeStatementId = "1234"
+
+       await expect(
+            getStatementOperationUseCase.execute({ user_id: user.id as string, statement_id: fakeStatementId as string })
+        ).rejects.toBeInstanceOf(GetStatementOperationError.StatementNotFound)
 
 
     });
 
-    it('should throw when user not exists', () => {
+    it('should throw when user not exists', async () => {
 
-        expect(async () => {
-            const createUserDto: ICreateUserDTO = {
-                name: "test name",
-                email: "test@test.com",
-                password: "1234"
-            }
 
-            const user = await inMemoryUsersRepository.create(createUserDto)
+        const createUserDto: ICreateUserDTO = {
+            name: "test name",
+            email: "test@test.com",
+            password: "1234"
+        }
 
-            const expectedStatement = await inMemoryStatementsRepository.create({
-                user_id: user.id as string,
-                amount: 100,
-                description: "test description",
-                type: OperationType.DEPOSIT
-            })
+        const user = await inMemoryUsersRepository.create(createUserDto)
 
-            const fakeUserId = "1234"
+        const expectedStatement = await inMemoryStatementsRepository.create({
+            user_id: user.id as string,
+            amount: 100,
+            description: "test description",
+            type: OperationType.DEPOSIT
+        })
 
-            await getStatementOperationUseCase.execute(
+        const fakeUserId = "1234"
+
+        await expect(
+            getStatementOperationUseCase.execute(
                 { user_id: fakeUserId, statement_id: expectedStatement.id as string }
             )
-        }).rejects.toBeInstanceOf(GetStatementOperationError.UserNotFound)
+        ).rejects.toBeInstanceOf(GetStatementOperationError.UserNotFound)
     });
 });

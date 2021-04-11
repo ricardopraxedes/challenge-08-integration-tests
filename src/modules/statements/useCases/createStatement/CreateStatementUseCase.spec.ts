@@ -39,37 +39,33 @@ describe('Create statement usecase', () => {
         expect(description).toBe("test description")
 
     })
-    it('should not be possible to create a new statement for non-existent user', () => {
+    it('should not be possible to create a new statement for non-existent user', async () => {
 
-        expect(async () => {
-            const fakeId = "1234"
+        const fakeId = "1234"
 
-            const result = await createStatementUseCase.execute({
-                user_id: fakeId as string,
-                amount: 100,
-                description: "test description",
-                type: OperationType.DEPOSIT
-            })
-        }).rejects.toBeInstanceOf(CreateStatementError.UserNotFound)
+        await expect(createStatementUseCase.execute({
+            user_id: fakeId as string,
+            amount: 100,
+            description: "test description",
+            type: OperationType.DEPOSIT
+        })
+        ).rejects.toBeInstanceOf(CreateStatementError.UserNotFound)
     })
-    it('should not be possible to withdraw amount higher than the user balance', () => {
+    it('should not be possible to withdraw amount higher than the user balance', async () => {
+        const createUserDto: ICreateUserDTO = {
+            name: "test name",
+            email: "test@test.com",
+            password: "1234"
+        }
 
-        expect(async () => {
+        const user = await inMemoryUsersRepository.create(createUserDto)
 
-            const createUserDto: ICreateUserDTO = {
-                name: "test name",
-                email: "test@test.com",
-                password: "1234"
-            }
-    
-            const user = await inMemoryUsersRepository.create(createUserDto)
-
-            const result = await createStatementUseCase.execute({
-                user_id: user.id as string,
-                amount: 100,
-                description: "test description",
-                type: OperationType.WITHDRAW
-            })
-        }).rejects.toBeInstanceOf(CreateStatementError.InsufficientFunds)
+        await expect(createStatementUseCase.execute({
+            user_id: user.id as string,
+            amount: 100,
+            description: "test description",
+            type: OperationType.WITHDRAW
+        })
+        ).rejects.toBeInstanceOf(CreateStatementError.InsufficientFunds)
     })
 });

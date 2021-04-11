@@ -25,12 +25,12 @@ describe('Show user profile use case', () => {
 
         expect(actualUser).toMatchObject(expectedUser)
     });
-    it('should throw if user not exists', () => {
-        expect(async () => {
-            const id = "1234"
+    it('should throw if user not exists', async () => {
+        const id = "1234"
 
-            await showUserProfileUseCase.execute(id)
-        }).rejects.toBeInstanceOf(ShowUserProfileError)
+        await expect(
+            showUserProfileUseCase.execute(id)
+        ).rejects.toBeInstanceOf(ShowUserProfileError)
     });
 
 });

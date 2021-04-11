@@ -12,21 +12,6 @@ describe('Create user use case', () => {
         inMemoryUsersRepository = new InMemoryUsersRepository()
         createUserUseCase = new CreateUserUseCase(inMemoryUsersRepository)
     })
-
-    it('should not be possible to create a new user with the same email', async () => {
-
-        const userDto: ICreateUserDTO = {
-            name: "test name",
-            email: "test@test.com",
-            password: "1234"
-        }
-
-        await createUserUseCase.execute(userDto)
-        
-        expect(async () => {
-            await createUserUseCase.execute(userDto)
-        }).rejects.toBeInstanceOf(CreateUserError)
-    });
     it('should be possible to create a new user', async () => {
         const createUserDto: ICreateUserDTO = {
             name: "test name",
@@ -39,5 +24,20 @@ describe('Create user use case', () => {
         expect(user.name).toBe(createUserDto.name)
         expect(user.email).toBe(createUserDto.email)
         expect(await compare(createUserDto.password, user.password)).toBe(true)
+    });
+
+    it('should not be possible to create a new user with the same email', async () => {
+
+        const userDto: ICreateUserDTO = {
+            name: "test name",
+            email: "test@test.com",
+            password: "1234"
+        }
+
+        await createUserUseCase.execute(userDto)
+
+        await expect(
+            createUserUseCase.execute(userDto)
+        ).rejects.toBeInstanceOf(CreateUserError)
     });
 });

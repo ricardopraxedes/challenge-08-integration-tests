@@ -42,16 +42,16 @@ describe('Get balance use case', () => {
         const result = await getBalanceUseCase.execute({ user_id: user.id as string })
 
         expect(result).toEqual({
-            statement: [depositStatement,withdrawStatement],
+            statement: [depositStatement, withdrawStatement],
             balance: 0
         })
     });
-    it('should not be possible to get user balance for non-existent user', () => {       
-        expect(async ()=>{
-        
-            const fakeId = "1234"
+    it('should not be possible to get user balance for non-existent user', async () => {
 
-            const result = await getBalanceUseCase.execute({ user_id: fakeId })
-        }).rejects.toBeInstanceOf(GetBalanceError)
+
+        const fakeId = "1234"
+        await expect(
+            getBalanceUseCase.execute({ user_id: fakeId })
+        ).rejects.toBeInstanceOf(GetBalanceError)
     });
 });
