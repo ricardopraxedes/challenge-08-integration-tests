@@ -18,14 +18,6 @@ describe('Authenticate user use case', () => {
         createUserUseCase = new CreateUserUseCase(inMemoryUsersRepository)
     });
     it('should be able to authenticate existing user', async () => {
-
-        const mockJwt = {
-            secret: "secret",
-            expiresIn: "1d"
-        }
-
-        auth.jwt = mockJwt
-
         const email = "test@test.com"
         const password = "1234"
         const name = "test name"
@@ -44,7 +36,7 @@ describe('Authenticate user use case', () => {
         expect(user.email).toBe(email)
 
         expect(() => {
-            verify(token, mockJwt.secret)
+            verify(token, process.env.JWT_SECRET as string)
         }).not.toThrow()
     });
     it('should not be able to authenticate not existing user', async () => {
